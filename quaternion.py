@@ -60,7 +60,7 @@ class Quaternion:
     def __init__(self, q1=0, q2=0, q3=0, q4=0):
 
         if isinstance(q1, Vector):
-            self.q1 = 0
+            self.q1 = 0.0
             v = q1
             self.q2 = v[0]
             self.q3 = v[1]
@@ -161,9 +161,11 @@ class Quaternion:
 
     def transform(self, coord):
 
+        assert self.norm2 - 1.0 < 1E-9
+
         S = coord if isinstance(coord, Quaternion) else Quaternion(coord)
         q = self * S * ~self
-        return Vector(q.q2, q.q3, q.q4) if isinstance(coord, Quaternion) else q
+        return q if isinstance(coord,Quaternion) else Vector(q.q2, q.q3, q.q4) \
 
     def __str__(self):
         return "1 * %lf + i * %lf + j * %lf  + k * %lf " % (self.q1, self.q2, self.q3, self.q4)

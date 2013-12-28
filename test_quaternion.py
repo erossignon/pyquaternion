@@ -80,11 +80,12 @@ class TestQuaternion(unittest.TestCase):
         self.assertEqual(p * ( q + r ), p * q + p * r)
 
     def test_rotation_quaternion(self):
+
         q = Quaternion.Rotation(Vector(0., 1.0, 0.0), math.pi / 3.0)
 
         v1 = q.transform(Vector(0.0, 1.0, 0.0))
 
-        #self.assertEqual(Vector(0.0,1.0,0.0),v1)
+        self.assertEqual(Vector(0.0,1.0,0.0),v1)
 
 
     def test_vector_quaternion(self):
