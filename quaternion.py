@@ -161,11 +161,11 @@ class Quaternion:
 
     def transform(self, coord):
 
-        assert self.norm2 - 1.0 < 1E-9
+        assert self.norm2 - 1.0 < 1E-9 # expect unit quaternion
 
         S = coord if isinstance(coord, Quaternion) else Quaternion(coord)
-        q = self * S * ~self
-        return q if isinstance(coord,Quaternion) else Vector(q.q2, q.q3, q.q4) \
+        q = self * S * self.conjugate
+        return q if isinstance(coord, Quaternion) else Vector(q.q2, q.q3, q.q4)
 
     def __str__(self):
         return "1 * %lf + i * %lf + j * %lf  + k * %lf " % (self.q1, self.q2, self.q3, self.q4)
