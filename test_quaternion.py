@@ -46,6 +46,10 @@ class TestQuaternion(unittest.TestCase):
         self.assertEqual(k * i, j)
         self.assertEqual(k * j, -i)
         self.assertEqual(k * k, -one)
+        self.assertEqual(i * j * k, -one)
+
+    def test_norm_b(self):
+        self.assertEqual(Quaternion(1.0, 2.0, 3.0, 4.0).norm2, 1 * 1 + 2 * 2 + 3 * 3 + 4 * 4)
 
     def test_multiply_quaternion(self):
         q1 = Quaternion(1, 2, 3, 4)
@@ -79,6 +83,9 @@ class TestQuaternion(unittest.TestCase):
         r = Quaternion(3, 5, 6, 7)
         self.assertEqual(p * ( q + r ), p * q + p * r)
 
+    def test_division_with_scalar(self):
+        self.assertEqual(Quaternion(2, 4, 6, 8) / 2.0, Quaternion(1, 2, 3, 4))
+
     def test_rotation_quaternion(self):
 
         q = Quaternion.Rotation(Vector(0., 1.0, 0.0), math.pi / 3.0)
@@ -107,3 +114,24 @@ class TestQuaternion(unittest.TestCase):
         q1 = Quaternion(0, 2, 0, 0)
         self.assertEqual(~q1, Quaternion(0.0, -0.5, 0.0, 0.0))
 
+
+    def test_orthogonal_matrix(self):
+        q = Quaternion(1, 2, 3, 4)
+        q = q / q.norm
+        self.assertAlmostEqual(q.norm, 1.0, places=9)
+
+        mat = q.toOrthogonalMatrix()
+
+        v1 = q.transform(Vector(1.0, 2.0, 3.0))
+
+        def multiply3x3(mat, vec):
+            x = mat[0][0] * vec[0] + mat[0][1] * vec[1] + mat[0][2] * vec[2]
+            y = mat[1][0] * vec[0] + mat[1][1] * vec[1] + mat[1][2] * vec[2]
+            z = mat[2][0] * vec[0] + mat[2][1] * vec[1] + mat[2][2] * vec[2]
+            return Vector(x, y, z)
+
+        v2 = multiply3x3(mat, (1.0, 2.0, 3.0))
+
+        self.assertAlmostEqual(v1[0], v2[0])
+        self.assertAlmostEqual(v1[1], v2[1])
+        self.assertAlmostEqual(v1[2], v2[2])

@@ -1,5 +1,7 @@
 import math
 
+# see http://en.wikipedia.org/wiki/Quaternion
+#     http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
 
 class Vector:
     """
@@ -112,6 +114,9 @@ class Quaternion:
         if type(other) is float:
             return Quaternion(self.q1 * other, self.q2 * other, self.q3 * other, self.q3 * other)
         elif isinstance(other, Quaternion):
+            # Hamilton product
+            #see http://en.wikipedia.org/wiki/Hamilton_product#Hamilton_product
+            #
             # P = 1.p1 + i.p2 + j.p3 + k.p4
             # Q = 1.q1 + i.q2 + j.q3 + k.q4
             # P.Q = (1.p1 + i.p2 + j.p3 + k.p4)(1.q1 + i.q2 + j.q3 + k.q4)
@@ -153,7 +158,7 @@ class Quaternion:
 
     def __div__(self, other):
         if type(other) is float:
-            return Quaternion(self.q1 / other, self.q2 / other, self.q3 / other, self.q3 / other)
+            return Quaternion(self.q1 / other, self.q2 / other, self.q3 / other, self.q4 / other)
         raise Exception("Not implemented")
 
     def __invert__(self):
@@ -176,3 +181,26 @@ class Quaternion:
     @property
     def conjugate(self):
         return Quaternion(self.q1, -self.q2, -self.q3, -self.q4)
+
+    def toOrthogonalMatrix(self):
+        # Conversion to and from the matrix representation
+        # http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
+        w = self.q1
+        x = self.q2
+        y = self.q3
+        z = self.q4
+
+        rc00 = w * w + x * x - y * y - z * z
+        rc01 = 2 * x * y - 2 * w * z
+        rc02 = 2 * x * z + 2 * w * y
+        rc10 = 2 * x * y + 2 * w * z
+        rc11 = w * w - x * x + y * y - z * z
+        rc12 = 2 * y * z - 2 * w * x
+        rc20 = 2 * x * z - 2 * w * y
+        rc21 = 2 * y * z + 2 * w * x
+        rc22 = w * w - x * x - y * y + z * z
+
+        mat = [[rc00, rc01, rc02],
+               [rc10, rc11, rc12],
+               [rc20, rc21, rc22]]
+        return mat
